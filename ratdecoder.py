@@ -74,7 +74,8 @@ def run(raw_data):
     if family == 'JavaDropper':
         log.info("Found Java Dropped, attemping to unpack")
         raw_data = JavaDropper.run(raw_data)
-        family = yara_scan(raw_data)
+        if raw_data:
+            family = yara_scan(raw_data)
 
         if family == 'JavaDropper':
             log.warning("Failed to unpack JavaDropper")
@@ -90,16 +91,18 @@ def run(raw_data):
         log.info("Identified family: {0}. Importing decoder.".format(family))
     except ImportError:
         log.warning('Unable to import decoder {0}'.format(family))
-        return
+        return {"Family": family}
 
     # Get config data
     try:
         config_data = module.config(raw_data)
     except Exception as e:
         log.error('Conf Data error with {0}. Due to {1}'.format(family, e))
-        return ['Error', 'Error Parsing Config']
+        return {"Family": family}
 
     config_data["Family"] = family
+    # remove keys having empty/None values
+    config_data = {k: v for k, v in config_data.iteritems() if v}
     return config_data
 
 
