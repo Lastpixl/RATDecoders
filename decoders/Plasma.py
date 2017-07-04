@@ -2,6 +2,9 @@ import re
 import hashlib
 from base64 import b64decode
 from Crypto.Cipher import AES
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):
@@ -34,7 +37,7 @@ def decrypt_string(key_string, coded):
 
 def parse_config(string_list):
     config_dict = {}
-    print string_list
+    log.debug(string_list)
     config_dict["Domain"] = string_list[1]
     config_dict["Port"] = string_list[2]
     config_dict["Username"] = string_list[3]

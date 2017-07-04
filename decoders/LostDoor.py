@@ -1,5 +1,8 @@
 import string
 from Crypto.Cipher import ARC4
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def string_print(line):
@@ -16,14 +19,14 @@ def ver_detect(data):
     if len(first) == 2:
         second = first[1].split("\r\n")
         if len(second) > 14 < 30:
-            print "[+] Found Version < 8"
+            log.info("Found Version < 8")
             return new_decoder(second)
     first = data.split("[DATA]")
     if len(first) == 21:
-        print "[+] Found Version 8"
+        log.info("Found Version 8")
         return ver_80(first)
     if len(first) == 30:
-        print "[+] Found Version 8.01"
+        log.info("Found Version 8.01")
         return ver_801(first)
     return None
 

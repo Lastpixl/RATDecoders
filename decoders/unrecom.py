@@ -3,6 +3,9 @@ from zipfile import ZipFile
 from cStringIO import StringIO
 import xml.etree.ElementTree as ET
 from Crypto.Cipher import ARC4
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def extract_embedded(zip_data):

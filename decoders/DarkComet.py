@@ -1,6 +1,9 @@
+import logging
 import string
-import pefile
 from binascii import unhexlify
+import pefile
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 BASE_CONFIG = {
     'FWB': '',
@@ -96,8 +99,6 @@ def extract_config(raw_data, key):
     rt_string_directory = pe.DIRECTORY_ENTRY_RESOURCE.entries[rt_string_idx]
 
     entry_names = [str(x.name) for x in rt_string_directory.directory.entries]
-    print('\n'.join(entry_names))
-    print(str(sum([1 for x in raw_config.keys() if x in entry_names])))
     if 'DCDATA' not in entry_names and (sum([1 for x in raw_config.keys() if x in entry_names]) == 0):
         off = offset_check(raw_data)
         pe = pefile.PE(data=raw_data[off:])

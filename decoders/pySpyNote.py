@@ -4,13 +4,9 @@ import os
 import argparse
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
+import logging
 
-
-def _log(s):
-    """
-    Prints out logs for debug purposes
-    """
-    print(s)
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def extract_config(apkfile):
@@ -41,8 +37,8 @@ def extract_config(apkfile):
                 server = "{0}:{1}".format(c2, str(port))
             else:
                 server = c2
-            _log('Extracting from %s' % apkfile)
-            _log('C&C: [ %s ]\n' % server)
+            log.debug('Extracting from %s' % apkfile)
+            log.debug('C&C: [ %s ]\n' % server)
 
 
 def check_apk_file(apk_file):
@@ -66,16 +62,16 @@ def logo():
     """
     Ascii Logos like the 90s. :P
     """
-    print '\n'
-    print ' ______     __  __     __     ______   ______        ______     ______     ______     __  __     ______     __   __   '
-    print '/\  ___\   /\ \_\ \   /\ \   /\__  _\ /\  ___\      /\  == \   /\  == \   /\  __ \   /\ \/ /    /\  ___\   /\ "-.\ \  '
-    print '\ \___  \  \ \  __ \  \ \ \  \/_/\ \/ \ \___  \     \ \  __<   \ \  __<   \ \ \/\ \  \ \  _"-.  \ \  __\   \ \ \-.  \ '
-    print ' \/\_____\  \ \_\ \_\  \ \_\    \ \_\  \/\_____\     \ \_____\  \ \_\ \_\  \ \_____\  \ \_\ \_\  \ \_____\  \ \_\\\\"\_\\'
-    print '  \/_____/   \/_/\/_/   \/_/     \/_/   \/_____/      \/_____/   \/_/ /_/   \/_____/   \/_/\/_/   \/_____/   \/_/ \/_/'
-    print '\n'
-    print " Find the C&C for this Spynote mallie!"
-    print " Jacob Soo"
-    print " Copyright (c) 2016\n"
+    log.info('\n')
+    log.info(' ______     __  __     __     ______   ______        ______     ______     ______     __  __     ______     __   __   ')
+    log.info('/\  ___\   /\ \_\ \   /\ \   /\__  _\ /\  ___\      /\  == \   /\  == \   /\  __ \   /\ \/ /    /\  ___\   /\ "-.\ \  ')
+    log.info('\ \___  \  \ \  __ \  \ \ \  \/_/\ \/ \ \___  \     \ \  __<   \ \  __<   \ \ \/\ \  \ \  _"-.  \ \  __\   \ \ \-.  \ ')
+    log.info(' \/\_____\  \ \_\ \_\  \ \_\    \ \_\  \/\_____\     \ \_____\  \ \_\ \_\  \ \_____\  \ \_\ \_\  \ \_____\  \ \_\\\\"\_\\')
+    log.info('  \/_____/   \/_/\/_/   \/_/     \/_/   \/_____/      \/_____/   \/_/ /_/   \/_____/   \/_/\/_/   \/_____/   \/_/ \/_/')
+    log.info('\n')
+    log.info(" Find the C&C for this Spynote mallie!")
+    log.info(" Jacob Soo")
+    log.info(" Copyright (c) 2016\n")
 
 
 if __name__ == "__main__":
@@ -109,7 +105,7 @@ if __name__ == "__main__":
         if check_apk_file(Filename[0]) is True:
             extract_config(Filename[0])
         else:
-            print("This is not a valid apk file: %s" % Filename[0])
+            log.error("This is not a valid apk file: %s" % Filename[0])
     if Directory is not None and is_dir:
         for root, directories, filenames in os.walk(Directory[0]):
             for filename in filenames:
@@ -117,4 +113,4 @@ if __name__ == "__main__":
                 if check_apk_file(szFile) is True:
                     extract_config(szFile)
                 else:
-                    print("This is not a valid apk file: %s" % szFile)
+                    log.error("This is not a valid apk file: %s" % szFile)

@@ -1,4 +1,7 @@
 import re
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 PRNG_SEED = 0
 

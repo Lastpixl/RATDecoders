@@ -1,6 +1,9 @@
+import logging
+import re
 from zipfile import ZipFile
 from cStringIO import StringIO
-import re
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def parse_config(raw_config):

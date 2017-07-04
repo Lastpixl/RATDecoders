@@ -3,10 +3,13 @@ import sys
 import zlib
 from struct import unpack
 import uuid
+import logging
 # Non Standard Imports
 from Crypto.Cipher import DES, AES
 import pefile
 import pype32
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):
@@ -36,8 +39,8 @@ def derive_key(guid, coded_key):
     try:
         from pbkdf2 import PBKDF2
     except:
-        print "[!] Unable to derive a key. requires 'sudo pip install pbkdf2'"
-        sys.exit()
+        log.warning("Unable to derive a key. requires 'sudo pip install pbkdf2'")
+        raise Exception("Unable to derive a key. requires 'sudo pip install pbkdf2'")
     generator = PBKDF2(guid, guid, 8)
     aes_iv = generator.read(16)
     aes_key = generator.read(16)

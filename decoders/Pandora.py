@@ -1,4 +1,7 @@
 import pefile
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def version_21(raw_config):

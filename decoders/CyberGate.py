@@ -1,5 +1,8 @@
+import logging
 import string
 import pefile
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def string_print(line):

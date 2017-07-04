@@ -1,9 +1,12 @@
 from base64 import b64decode
+import logging
 
 # Non Standard Imports
 import pype32
 from Crypto.Cipher import AES
 from pbkdf2 import PBKDF2
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):

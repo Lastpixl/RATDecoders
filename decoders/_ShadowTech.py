@@ -5,9 +5,12 @@ ShadowTech Config Extractor
 import re
 import string
 from operator import xor
+import logging
 from Crypto.Cipher import XOR
 import database
 import createIOC
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 new_line = '#-@NewLine@-#'
 split_string = 'ESILlzCwXBSrQ1Vb72t6bIXtKRzHJkolNNL94gD8hIi9FwLiiVlrznTz68mkaaJQQSxJfdLyE4jCnl5QJJWuPD4NeO4WFYURvmkth8'
@@ -32,7 +35,7 @@ def get_config(data):
 
                 key_slice = ord(enc_key[i+1])  # get next Char For Key
                 output += chr(xor(data_slice, key_slice))  # xor Hex and Key Char
-            print output
+            log.info(output)
         except:
             output = "DecodeError"
         config_list.append(output)

@@ -1,9 +1,12 @@
 import struct
 import pefile
 import yara
+import logging
 
 # Non Standard Imports
 from Crypto.Cipher import ARC4
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 rule_source = '''
 rule opcodes {

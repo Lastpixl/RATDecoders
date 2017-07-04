@@ -1,7 +1,10 @@
+import logging
 import string
 from zipfile import ZipFile
 from cStringIO import StringIO
 from Crypto.Cipher import AES
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def decrypt_aes(key, data):

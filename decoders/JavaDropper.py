@@ -5,9 +5,13 @@ import hashlib
 from zipfile import ZipFile
 from cStringIO import StringIO
 from base64 import b64decode
+import logging
 
 # Non Standard Imports
 from Crypto.Cipher import ARC4, AES, XOR
+
+log = logging.getLogger("ratdecoder." + __name__)
+
 
 # Helper Functions Go Here
 
@@ -39,7 +43,7 @@ def parse_ek(key, drop):
     drop_details = key[16:]
     decoded = decrypt_AES(enc_key, coded)
     for section in drop_details.split(','):
-        print b64decode(section).decode('hex')
+        log.info(b64decode(section).decode('hex'))
     return decoded
 
 
@@ -56,10 +60,10 @@ def parse_stub(drop):
     for key in keys:
         decoded = decrypt_AES(key, drop)
         if 'META-INF' in decoded:
-            print "Found Embedded Jar"
+            log.info("Found Embedded Jar")
             return decoded
         if 'Program' in decoded:
-            print "Found Embedded EXE"
+            log.info("Found Embedded EXE")
             return decoded
 
 
@@ -79,32 +83,32 @@ def run(raw_data):
     jar = ZipFile(jar_data, 'r')
 
     if 'e' and 'k' in jar.namelist():
-        print "Found EK Dropper"
+        log.info("Found EK Dropper")
         key = jar.read('k')
         drop = jar.read('e')
         decoded = parse_ek(key, drop)
 
     if 'config.ini' and 'password.ini' in jar.namelist():
-        print "Found LoadStub Dropper"
+        log.info("Found LoadStub Dropper")
         key = jar.read('password.ini')
         drop = jar.read('config.ini')
         decoded = parse_load(key, drop)
 
     if 'stub/stub.dll' in jar.namelist():
-        print "Found Stub Dropper"
+        log.info("Found Stub Dropper")
         drop = jar.read('stub/stub.dll')
         decoded = parse_stub(drop)
 
     if 'c.dat' in jar.namelist():
-        print "Found XOR Dropper"
+        log.info("Found XOR Dropper")
         key_file = b64decode(jar.read('c.dat'))
         key_text = decrypt_XOR('\xdd', key_file)
         drop_file = key_text.split('\n')[1]
         key = key_text.split('\n')[5]
-        print key
+        log.info(key)
         decoded = parse_xor(key, jar.read(drop_file))
 
     if decoded:
         return decoded
     else:
-        print "Unable to decode"
+        log.warning("Unable to decode")

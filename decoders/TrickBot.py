@@ -1,8 +1,11 @@
 import struct
 import hashlib
 import xml.etree.ElementTree as ET
+import logging
 import pefile
 from Crypto.Cipher import AES
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def derive_key(n_rounds, input_bf):

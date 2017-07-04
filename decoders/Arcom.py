@@ -1,5 +1,8 @@
 import base64
+import logging
 from Crypto.Cipher import Blowfish
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def decrypt_blowfish(raw_data):

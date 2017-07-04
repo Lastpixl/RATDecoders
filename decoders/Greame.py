@@ -1,5 +1,8 @@
 import string
 import pefile
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def get_config(data):

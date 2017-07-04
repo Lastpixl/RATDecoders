@@ -1,4 +1,7 @@
+import logging
 import pefile
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def extract_config(raw_data):

@@ -1,6 +1,9 @@
+import logging
 import re
 import database
 import ioc
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def run(md5, data):

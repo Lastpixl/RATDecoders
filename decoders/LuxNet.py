@@ -1,5 +1,8 @@
 import string
 from struct import unpack
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def calc_length(byteStr):

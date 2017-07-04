@@ -1,11 +1,10 @@
 import re
 import string
+import logging
 from Crypto.Cipher import DES
 from base64 import b64decode
 
-# Logging
-import logging
-logger = logging.getLogger(__name__)
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def string_print(line):
@@ -48,7 +47,6 @@ def parsed_config(clean_config):
 
 
 def config(data):
-    logger.error('AAR Decoder')
     coded_config = get_config(data)
     decoded_config = b64decode(coded_config)
     raw_config = decrypt_des(decoded_config)

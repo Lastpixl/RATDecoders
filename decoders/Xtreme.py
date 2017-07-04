@@ -1,5 +1,8 @@
+import logging
 from struct import unpack
 import pefile
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def get_unicode_string(buf, pos):

@@ -1,5 +1,8 @@
 import base64
 import pype32
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):

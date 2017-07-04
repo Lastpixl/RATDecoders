@@ -2,6 +2,9 @@ from base64 import b64decode
 import pype32
 from Crypto.Cipher import AES
 from pbkdf2 import PBKDF2
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):
@@ -68,15 +71,15 @@ def get_strings(pe, dir_type):
 def get_version(string_list):
     # Pred v12
     if 'Predator Pain v12 - Server Ran - [' in string_list:
-        print "    [-] Found Predator Pain v12"
+        log.info("Found Predator Pain v12")
         return 'v12'
     # Pred v13
     elif 'Predator Pain v13 - Server Ran - [' in string_list:
-        print "    [-] Found Predator Pain v13"
+        log.info("Found Predator Pain v13")
         return 'v13'
     # Pred v14
     elif 'EncryptedCredentials' in string_list:
-        print "    [-] Found Predator Pain v14"
+        log.info("Found Predator Pain v14")
         return 'v14'
     else:
         return

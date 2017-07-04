@@ -2,6 +2,9 @@ import re
 import hashlib
 from base64 import b64decode
 from Crypto.Cipher import AES
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def config(raw_data):

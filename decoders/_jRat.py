@@ -4,14 +4,17 @@ from base64 import b64decode
 from zipfile import ZipFile
 from Crypto.Cipher import AES, DES3
 import database
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def run(md5, data):
-    print "[+] Extracting Data from Jar"
+    log.info("Extracting Data from Jar")
     enckey, conf = get_parts(data)
     if enckey is None:
         return
-    print "[+] Decoding Config with Key: {0}".format(enckey.encode('hex'))
+    log.info("Decoding Config with Key: {0}".format(enckey.encode('hex')))
     if len(enckey) == 16:
         # Newer versions use a base64 encoded config.dat
         if '==' in conf:  # this is not a great test but should work 99% of the time
@@ -50,7 +53,7 @@ def get_parts(data):
                 if name == "config.dat":  # this is the encrypted config file
                     conf = zip.read(name)
     except:
-        print "[+] Dropped File is not Jar File starts with Hex Chars: {0}".format(data[:5].encode('hex'))
+        log.warning("Dropped File is not Jar File starts with Hex Chars: {0}".format(data[:5].encode('hex')))
         return None, None
     if enckey and conf:
         return enckey, conf
@@ -65,14 +68,14 @@ def get_parts(data):
 def get_dropper(enckey, dropper):
     split = enckey.split('\x2c')
     key = split[0][:16]
-    print "[+] Dropper Detected"
+    log.info("Dropper Detected")
     for x in split:  # grab each line of the config and decode it.
         try:
             drop = b64decode(x).decode('hex')
-            print "    [-] {0}".format(drop).replace('\x0d\x0a', '')
+            log.info(drop.replace('\x0d\x0a', ''))
         except:
             drop = b64decode(x[16:]).decode('hex')
-            print "    [-] {0}".format(drop)
+            log.info(drop)
     new_zipdata = decrypt_aes(key, dropper)
     new_key, conf = get_parts(new_zipdata)
     return new_key, conf

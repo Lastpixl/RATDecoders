@@ -1,8 +1,11 @@
+import logging
 import string
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 from cStringIO import StringIO
 from Crypto.Cipher import ARC4, DES
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def sortConfig(old_config):

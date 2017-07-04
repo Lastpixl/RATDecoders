@@ -1,8 +1,11 @@
 from base64 import b64decode
 import hashlib
+import logging
 import re
 import pefile
 from Crypto.Cipher import AES, XOR
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def string_print(line):

@@ -1,4 +1,7 @@
 import string
+import logging
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def string_print(line):

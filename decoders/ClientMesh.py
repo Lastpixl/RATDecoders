@@ -1,5 +1,8 @@
+import logging
 import string
 from base64 import b64decode
+
+log = logging.getLogger("ratdecoder." + __name__)
 
 
 def stringPrintable(line):

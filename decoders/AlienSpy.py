@@ -1,16 +1,19 @@
-import re
 import json
+import logging
+import re
 import string
 import struct
 from zipfile import ZipFile
 from cStringIO import StringIO
 from Crypto.Cipher import ARC4
 
+log = logging.getLogger("ratdecoder." + __name__)
+
 
 def version_a(enckey, coded_jar):
     config_dict = {}
     for key in enckey:
-        print "  [!] testing Key {0}".format(key)
+        log.info("testing Key {0}".format(key))
         decoded_data = decrypt_RC4(key, coded_jar)
         try:
             decoded_jar = ZipFile(StringIO(decoded_data))
@@ -26,7 +29,7 @@ def version_a(enckey, coded_jar):
 def version_b(enckey, coded_jar):
     config_dict = {}
     for key in enckey:
-        print "  [!] testing Key {0}".format(key)
+        log.info("testing Key {0}".format(key))
         decoded_data = decrypt_RC4(key, coded_jar)
         try:
             decoded_jar = ZipFile(StringIO(decoded_data))
@@ -43,7 +46,7 @@ def version_b(enckey, coded_jar):
 def version_c(enckey, coded_jar, rounds=20, P=0xB7E15163, Q=0x9E3779B9):
     config_dict = {}
     for key in enckey:
-        print "  [!] testing Key {0}".format(key)
+        log.info("testing Key {0}".format(key))
         decoded_data = decrypt_RC6(key, coded_jar, rounds=rounds, P=P, Q=Q)
         try:
             decoded_jar = ZipFile(StringIO(decoded_data))
