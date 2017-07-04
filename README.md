@@ -1,5 +1,4 @@
-RATDecoders
-===========
+# RATDecoders
 
 This Repo will hold a collection of Python Scripts that will extract and decode the configuration settings from common rats.
 
@@ -9,7 +8,7 @@ If you wish to contribute please feel free to fork or email me on decoders@malwa
 
 The write-up is here http://techanarchy.net/2014/04/rat-decoders/
 
-###Current Rats
+## Current Rats
 Here is a list of the currently supported RATS:
 
 - Adwind
@@ -55,13 +54,13 @@ Here is a list of the currently supported RATS:
 - xRat
 - xtreme
 
-###Upcoming RATS
+## Upcoming RATS
 
 - NetWire
 - Plasma
 - Any Other Rats i can find.
 
-###Usage
+## Usage
 
 The decoders now act like a framework with auto family detection. You can still find the original individual decoders in the archive folder. These will not be 
 kept as up to date as the decoders in the framework. 
@@ -70,7 +69,7 @@ kept as up to date as the decoders in the framework.
 
 ```python ratdecoder.py -l``` This will list all the supported rats
 
-###Requirements
+## Requirements
 
 There are several modules that are required and each script is different, Please check the individual scripts. 
 This list is a complete listing of all the Python Modules
@@ -81,12 +80,12 @@ This list is a complete listing of all the Python Modules
 - Yara
 - pbkdf2
 
-### ToDo
+## ToDo
 
 There will be more decoders coming
 Finish the Recursive mode on several of the Decoders
 
-### Thanks
+## Thanks
 
 Full credit where credit is due. 
 
