@@ -27,7 +27,7 @@ def unpack(raw_data):
     f.write(raw_data)
     f.close()
     try:
-        subprocess.call("(upx -d %s)" % f.name, shell=True)
+        subprocess.call("(upx -q -q -q -d %s)" % f.name, shell=True)
     except Exception as e:
         log.warning('UPX Error {0}'.format(e))
         return
