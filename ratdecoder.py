@@ -14,7 +14,8 @@ __description__ = 'RAT Config Extractor'
 __author__ = 'Kevin Breen, https://techanarchy.net, https://malwareconfig.com'
 __version__ = '1.0'
 __date__ = '2016/04'
-rule_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yaraRules', 'yaraRules.yar')
+rule_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                         'yaraRules', 'yaraRules.yar')
 
 
 def unpack(raw_data):
@@ -22,7 +23,7 @@ def unpack(raw_data):
     f.write(raw_data)
     f.close()
     try:
-        subprocess.call("(upx -d %s)" %f.name, shell=True)
+        subprocess.call("(upx -d %s)" % f.name, shell=True)
     except Exception as e:
         print 'UPX Error {0}'.format(e)
         return
@@ -31,8 +32,10 @@ def unpack(raw_data):
     return new_data
 
 
-# Yara Scanner Returns the Rule Name
 def yara_scan(raw_data):
+    """
+    Returns the Rule Name
+    """
     yara_rules = yara.compile(rule_file)
     matches = yara_rules.match(data=raw_data)
     if len(matches) > 0:
@@ -51,8 +54,6 @@ def run(raw_data):
 
     # Yara Scan
     family = yara_scan(raw_data)
-
-
 
     # UPX Check and unpack
     if family == 'UPX':
@@ -76,7 +77,7 @@ def run(raw_data):
             return
 
     if not family:
-        print "    [!] Unabel to match your sample to a decoder"
+        print "    [!] Unable to match your sample to a decoder"
         return
 
     # Import decoder
@@ -102,15 +103,14 @@ def print_output(config_dict, output):
         with open(output, 'a') as out:
             print "    [+] Printing Config to Output"
             for key, value in sorted(config_dict.iteritems()):
-                out.write("       [-] Key: {0}\t Value: {1}".format(key,value))
+                out.write("       [-] Key: {0}\t Value: {1}".format(key, value))
             out.write('*'*20)
             print "    [+] End of Config"
     else:
         print "[+] Printing Config to screen"
         for key, value in sorted(config_dict.iteritems()):
-            print "   [-] Key: {0}\t Value: {1}".format(key,value)
+            print "   [-] Key: {0}\t Value: {1}".format(key, value)
         print "[+] End of Config"
-
 
 
 if __name__ == "__main__":

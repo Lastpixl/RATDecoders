@@ -4,9 +4,8 @@ import string
 import struct
 from zipfile import ZipFile
 from cStringIO import StringIO
-
-#Non Standard Imports
 from Crypto.Cipher import ARC4
+
 
 def version_a(enckey, coded_jar):
     config_dict = {}
@@ -56,6 +55,7 @@ def version_c(enckey, coded_jar, rounds=20, P=0xB7E15163, Q=0x9E3779B9):
         except:
             pass
 
+
 def version_d(enckey, coded_jar):
     return version_c(enckey, coded_jar, rounds=22, P=0xb7e15263, Q=0x9e3779c9)
 
@@ -68,8 +68,8 @@ def string_print(line):
 
 
 def decrypt_RC4(enckey, data):
-	cipher = ARC4.new(enckey) # set the ciper
-	return cipher.decrypt(data) # decrpyt the data
+    cipher = ARC4.new(enckey)  # set the ciper
+    return cipher.decrypt(data)  # decrpyt the data
 
 
 def decrypt_RC6(key, encrypted, P, Q, rounds):
@@ -82,13 +82,12 @@ def decrypt_RC6(key, encrypted, P, Q, rounds):
     def ror(a, i):
         i &= 0x1F
         a &= 0xFFFFFFFF
-        return ( ((a >> i) & 0xFFFFFFFF) | (a << ( (32 - i)))) & 0xFFFFFFFF
+        return (((a >> i) & 0xFFFFFFFF) | (a << ((32 - i)))) & 0xFFFFFFFF
 
-
-    def to_int(bytes):
+    def to_int(bytestr):
         l = []
-        for i in range(len(bytes)/4):
-            l.append(struct.unpack("<I", bytes[i*4:(i*4)+4])[0])
+        for i in range(len(bytestr)/4):
+            l.append(struct.unpack("<I", bytestr[i*4:(i*4)+4])[0])
         return l
 
     def decrypt_block(block, S):
@@ -154,30 +153,33 @@ def decrypt_XOR(keys, data):
     for key in keys:
         res = ""
         for i in xrange(len(data)):
-            res += chr(ord(data[i]) ^ ord(key[i%len(key)]))
+            res += chr(ord(data[i]) ^ ord(key[i % len(key)]))
         if "SERVER" in res:
             return res
 
+
 def xor_config(data):
     config_dict = {}
-    xor_keys = ["0x999sisosouuqjqhyysuhahyujssddqsad23rhggdsfsdfs",
-                "VY999sisosouuqjqhyysuhahyujssddqsad22rhggdsfsdfs",
-                "ABJSIOODKKDIOSKKJDJUIOIKASJIOOQKSJIUDIKDKIAS",
-                "fkfjgioelsqisoosidiijsdndcbhchyduwiqoqpqwoieweueidjdshsjahshquuiqoaooasisjdhdfh",
-                "adsdcwegtryhyurtgwefwedwscsdcwsdfcasfwqedfwefsdfasdqwdascfsdfvsdvwergvergerg",
-                "adsdcwegtryhyurtgwefwedwscsdcwsdfcasfwqedfwefsdfasdqwdascfsdfvsdvwergvergerg",
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                "lolskmzzzznzbxbxjxjjzkkzzkiziopoakidqoiwjdiqjhwdiqjwiodjdhjhbhbvhcebucbecercsdsd",
-                "Zlolskmzzzznzbxbxjxjjzkkzzkiziopoakidqoiwjdiqjhwdiqjwiodjdhjhbhbvhcebucbecercsdsd",
-                "aaaaaaaaaaaaaaaaaaaaa",
-                "kevthehermitisacompletegaywhatfuckwithhismotherXDXDXD",
-                "XXXXXXXkevthehermitisacompletegaywhatfuckwithhismotherXDXDXD",
-                ]
+    xor_keys = [
+        "0x999sisosouuqjqhyysuhahyujssddqsad23rhggdsfsdfs",
+        "VY999sisosouuqjqhyysuhahyujssddqsad22rhggdsfsdfs",
+        "ABJSIOODKKDIOSKKJDJUIOIKASJIOOQKSJIUDIKDKIAS",
+        "fkfjgioelsqisoosidiijsdndcbhchyduwiqoqpqwoieweueidjdshsjahshquuiqoaooasisjdhdfh",
+        "adsdcwegtryhyurtgwefwedwscsdcwsdfcasfwqedfwefsdfasdqwdascfsdfvsdvwergvergerg",
+        "adsdcwegtryhyurtgwefwedwscsdcwsdfcasfwqedfwefsdfasdqwdascfsdfvsdvwergvergerg",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "lolskmzzzznzbxbxjxjjzkkzzkiziopoakidqoiwjdiqjhwdiqjwiodjdhjhbhbvhcebucbecercsdsd",
+        "Zlolskmzzzznzbxbxjxjjzkkzzkiziopoakidqoiwjdiqjhwdiqjwiodjdhjhbhbvhcebucbecercsdsd",
+        "aaaaaaaaaaaaaaaaaaaaa",
+        "kevthehermitisacompletegaywhatfuckwithhismotherXDXDXD",
+        "XXXXXXXkevthehermitisacompletegaywhatfuckwithhismotherXDXDXD",
+    ]
     raw_config = decrypt_XOR(xor_keys, data)
     for line in raw_config.split('\n'):
         if line.startswith('<entry key'):
             config_dict[re.findall('key="(.*?)"', line)[0]] = re.findall('>(.*?)</entry', line)[0]
     return config_dict
+
 
 def run(file_name):
     config_dict = False

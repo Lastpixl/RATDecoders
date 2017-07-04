@@ -1,11 +1,12 @@
 import pefile
 
+
 def extract_config(raw_data):
     pe = pefile.PE(data=raw_data)
 
     try:
         rt_string_idx = [
-            entry.id for entry in 
+            entry.id for entry in
             pe.DIRECTORY_ENTRY_RESOURCE.entries
         ].index(pefile.RESOURCE_TYPE['RT_RCDATA'])
     except:
@@ -19,7 +20,8 @@ def extract_config(raw_data):
             size = entry.directory.entries[0].data.struct.Size
             data = pe.get_memory_mapped_image()[data_rva:data_rva+size]
             return data
-                
+
+
 def config(data):
     try:
         conf_dict = {}

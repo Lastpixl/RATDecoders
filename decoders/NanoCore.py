@@ -3,39 +3,34 @@ import sys
 import zlib
 from struct import unpack
 import uuid
-
-
-#Non Standard Imports
+# Non Standard Imports
 from Crypto.Cipher import DES, AES
 import pefile
 import pype32
 
+
 def config(raw_data):
-    #try:
-    if True:
-        coded_config = get_codedconfig(raw_data)
+    coded_config = get_codedconfig(raw_data)
 
-        if coded_config[0:4] == '\x08\x00\x00\x00':
-            conf_dict = decrypt_v2(coded_config)
-            domain_list = [conf_dict["Domain1"], conf_dict["Domain2"]]
-            
-        elif coded_config[0:4] == '\x10\x00\x00\x00':
-            # we need to derive a key from teh assembly guid
-            guid = re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', raw_data).group()
-            guid = uuid.UUID(guid).bytes_le
-            encrypted_key = coded_config[4:20]
+    if coded_config[0:4] == '\x08\x00\x00\x00':
+        conf_dict = decrypt_v2(coded_config)
+        domain_list = [conf_dict["Domain1"], conf_dict["Domain2"]]
 
-            # rfc2898 derive bytes
-            derived_key = derive_key(guid, encrypted_key)
-            conf_dict = decrypt_v3(coded_config, derived_key)
-        else:
-           conf_dict = decrypt_v1(coded_config)
-        return conf_dict
-    #except Exception as e:
-        #logging.error('NanoCore Decoder error {0}'.format(e))
-        #return False
+    elif coded_config[0:4] == '\x10\x00\x00\x00':
+        # we need to derive a key from teh assembly guid
+        guid = re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', raw_data).group()
+        guid = uuid.UUID(guid).bytes_le
+        encrypted_key = coded_config[4:20]
 
-#Helper Functions Go Here
+        # rfc2898 derive bytes
+        derived_key = derive_key(guid, encrypted_key)
+        conf_dict = decrypt_v3(coded_config, derived_key)
+    else:
+        conf_dict = decrypt_v1(coded_config)
+    return conf_dict
+
+# Helper Functions Go Here
+
 
 def derive_key(guid, coded_key):
     try:
@@ -49,6 +44,7 @@ def derive_key(guid, coded_key):
     derived_key = decrypt_aes(aes_key, aes_iv, coded_key)
     return derived_key
 
+
 def decrypt_v3(coded_config, key):
     data = coded_config[24:]
     raw_config = decrypt_des(key[:8], data)
@@ -59,6 +55,7 @@ def decrypt_v3(coded_config, key):
         # remove the string lengths and deflate the remainder of the stream
         deflate_config = deflate_contents(raw_config)
         return parse_config(deflate_config, '3')
+
 
 def decrypt_v2(coded_config):
     key = coded_config[4:12]
@@ -71,7 +68,8 @@ def decrypt_v2(coded_config):
         # remove the string lengths and deflate the remainder of the stream
         deflate_config = deflate_contents(raw_config)
         return parse_config(deflate_config, '2')
-            
+
+
 def decrypt_v1(coded_config):
     key = '\x01\x03\x05\x08\x0d\x15\x22\x37'
     data = coded_config[1:]
@@ -80,28 +78,34 @@ def decrypt_v1(coded_config):
         deflate_config = deflate_contents(new_data)
         return parse_config(deflate_config, 'old')
 
+
 def deflate_contents(data):
     new_data = data[5:]
     return zlib.decompress(new_data, -15)
 
-# Returns only printable chars
+
 def string_print(line):
+    """
+    Returns only printable chars
+    """
     try:
         return ''.join((char for char in line if 32 < ord(char) < 127))
     except:
         return line
 
-# returns pretty config
+
 def parse_config(raw_config, ver):
+    """
+    returns pretty config
+    """
     config_dict = {}
-    
-    # Some plugins drop in here as exe files. 
+
+    # Some plugins drop in here as exe files.
     if 'This program cannot be run' in raw_config:
         raw_config = raw_config.split('BuildTime')[1]
 
-    
     if ver == '2':
-        #config_dict['BuildTime'] = unpack(">Q", re.search('BuildTime(.*?)\x0c', raw_config).group()[10:-1])[0]
+        # config_dict['BuildTime'] = unpack(">Q", re.search('BuildTime(.*?)\x0c', raw_config).group()[10:-1])[0]
         config_dict['Version'] = re.search('Version\x0c(.*?)\x0c', raw_config).group()[8:-1]
         config_dict['Mutex'] = re.search('Mutex(.*?)\x0c', raw_config).group()[6:-1].encode('hex')
         config_dict['Group'] = re.search('DefaultGroup\x0c(.*?)\x0c', raw_config).group()[14:-1]
@@ -141,7 +145,7 @@ def parse_config(raw_config, ver):
             config_dict['RestartDelay'] = unpack("<i", re.search('RestartDelay(.*?)\x0c', raw_config).group()[13:-1])[0]
         except:
             pass
-            #config_dict['RunDelay'] = unpack("<i", re.search('RunDelay(.*?)\x0c', raw_config).group()[7:-1])[0]
+            # config_dict['RunDelay'] = unpack("<i", re.search('RunDelay(.*?)\x0c', raw_config).group()[7:-1])[0]
 
         try:
             config_dict['UseCustomDNS'] = re.search('UseCustomDnsServer(.*?)\x0c', raw_config).group()[19:-1].encode('hex')
@@ -166,8 +170,10 @@ def parse_config(raw_config, ver):
     return config_dict
 
 
-# This gets the encoded config from a stub
 def get_codedconfig(data):
+    """
+    This gets the encoded config from a stub
+    """
     coded_config = None
 
     try:

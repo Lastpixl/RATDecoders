@@ -2,6 +2,7 @@ import re
 from Crypto.Cipher import XOR
 from struct import unpack
 
+
 def config_v1(config_list):
     config_dict = {}
     counter = 1
@@ -17,8 +18,8 @@ def config_v1(config_list):
         config_dict['Waiting Time'] = unpack('>H', str(config[8][:2].rstrip('\x88')))[0]
         counter += 1
     return config_dict
-            
-    
+
+
 def config_v2(config_list):
     config_dict = {}
     counter = 1
@@ -35,32 +36,31 @@ def config_v2(config_list):
         config_dict['{}_Waiting Time'.format(counter)] = unpack('<H', str(config[9][:2].rstrip('V')))[0]
         counter += 1
     return config_dict
-        
-    
+
+
 def xor_file(file_data, key):
     cipher = XOR.new(key)
     return cipher.decrypt(file_data)
+
 
 def config(file_data):
     # RE for 1.0 and 1.1
     re_pattern1 = r'([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})([ -~\x88]{100})(.{12}\x77\x77\x77\x77)'
     # RE for 1.2, 1.3, 1.4
     re_pattern2 = r'([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{50})([ -~]{12})(0uVVVVVV)'
-    
-    
+
     # XOR for Version 1.0
-    
+
     configs = False
-    
+
     xor_data = xor_file(file_data, '\x88')
     config_list = re.findall(re_pattern1, xor_data)
-    
+
     for c in config_list:
         if any(".exe" in s for s in c):
             print "Found Version < 1.3"
             configs = config_v1(config_list)
 
-    
     # XOR for later versions
 
     xor_data = xor_file(file_data, 'V')

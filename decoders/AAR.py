@@ -7,14 +7,17 @@ from base64 import b64decode
 import logging
 logger = logging.getLogger(__name__)
 
+
 def string_print(line):
     return filter(lambda x: x in string.printable, line)
 
+
 def get_config(data):
     m = re.search('\x01\x96\x01(.*)@@', data)
-    raw_config = m.group(0).replace('@','')[3:]
+    raw_config = m.group(0).replace('@', '')[3:]
     return raw_config
-        
+
+
 def decrypt_des(data):
     key = '&%#@?,:*'
     iv = '\x12\x34\x56\x78\x90\xab\xcd\xef'
@@ -42,6 +45,7 @@ def parsed_config(clean_config):
         config_dict['Port2'] = sections[3]
         config_dict['AntiDebug'] = sections[4]
     return config_dict
+
 
 def config(data):
     logger.error('AAR Decoder')

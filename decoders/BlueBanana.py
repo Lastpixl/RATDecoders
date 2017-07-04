@@ -1,5 +1,3 @@
-import os
-import sys
 import string
 from zipfile import ZipFile
 from cStringIO import StringIO
@@ -10,13 +8,15 @@ def decrypt_aes(key, data):
     cipher = AES.new(key)
     return cipher.decrypt(data)
 
+
 def decrypt_conf(conFile):
     key1 = '15af8sd4s1c5s511'
     key2 = '4e3f5a4c592b243f'
     first = decrypt_aes(key1, conFile.decode('hex'))
     second = decrypt_aes(key2, first[:-16].decode('hex'))
     return second
-    
+
+
 def extract_config(raw_conf):
     conf = {}
     clean = filter(lambda x: x in string.printable, raw_conf)
@@ -32,6 +32,7 @@ def extract_config(raw_conf):
         conf['JarName'] = fields[5]
 
     return conf
+
 
 def config(data):
     new_zip = StringIO(data)

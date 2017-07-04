@@ -1,10 +1,9 @@
+import struct
 import pefile
 import yara
-import struct
 
 # Non Standard Imports
 from Crypto.Cipher import ARC4
-
 
 rule_source = '''
 rule opcodes {
@@ -94,7 +93,7 @@ def parse_config(config_list):
             i = int(p[2])
             proxy_list.append('{0}:{1}:{2}'.format(proxy_type[i], p[0], p[1]))
         config_dict['Proxy Server'] = proxy_list
-        
+
     config_dict['Password'] = config_list[2]
     config_dict['Host ID'] = config_list[3]
     config_dict['Mutex'] = config_list[4]
@@ -105,9 +104,9 @@ def parse_config(config_list):
     config_dict['Proxy Option'] = proxy_options(config_list[10])
     for o in parse_options(config_list[9]):
         config_dict[o['Option']] = o['Value']
-    
+
     return config_dict
-    
+
 
 def parse_domains(domains):
     domain_list = []

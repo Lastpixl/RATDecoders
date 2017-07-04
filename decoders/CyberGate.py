@@ -1,8 +1,10 @@
 import string
 import pefile
 
+
 def string_print(line):
     return filter(lambda x: x in string.printable, line)
+
 
 def xor(data):
     key = 0xBC
@@ -10,6 +12,7 @@ def xor(data):
     for i in range(len(encoded)):
         encoded[i] ^= key
     return str(encoded).decode('ascii', 'replace')
+
 
 def extract_config(raw_data):
     try:
@@ -35,7 +38,8 @@ def extract_config(raw_data):
                 return config
     except:
         return None
-    
+
+
 def config(data):
     conf = {}
     raw_conf = extract_config(data)
@@ -43,14 +47,14 @@ def config(data):
         if len(raw_conf) > 20:
             domains = ''
             ports = ''
-            #Config sections 0 - 19 contain a list of Domains and Ports
-            for i in range(0,19):
+            # Config sections 0 - 19 contain a list of Domains and Ports
+            for i in range(0, 19):
                 if len(raw_conf[i]) > 1:
                     domains += xor(raw_conf[i]).split(':')[0]
                     domains += ','
                     ports += xor(raw_conf[i]).split(':')[1]
                     ports += ','
-                
+
             conf['Domain'] = domains
             conf['Port'] = ports
             conf['CampaignID'] = string_print(xor(raw_conf[20]))
@@ -78,15 +82,15 @@ def config(data):
             conf['Persistance'] = string_print(xor(raw_conf[59]))
             conf['HideFile'] = string_print(xor(raw_conf[60]))
             conf['ChangeCreationDate'] = string_print(xor(raw_conf[61]))
-            conf['Mutex'] = string_print(xor(raw_conf[62]))        
+            conf['Mutex'] = string_print(xor(raw_conf[62]))
             conf['MeltFile'] = string_print(xor(raw_conf[63]))
-            conf['CyberGateVersion'] = string_print(xor(raw_conf[67]))      
+            conf['CyberGateVersion'] = string_print(xor(raw_conf[67]))
             conf['StartupPolicies'] = string_print(xor(raw_conf[69]))
             conf['USBSpread'] = string_print(xor(raw_conf[70]))
-            #conf['P2PSpread'] = string_print(xor(raw_conf[71])
-            #conf['GoogleChromePasswords'] = string_print(xor(raw_conf[73]))
+            # conf['P2PSpread'] = string_print(xor(raw_conf[71])
+            # conf['GoogleChromePasswords'] = string_print(xor(raw_conf[73]))
 
-        if xor(raw_conf[57]) == 0 or xor(raw_conf[57]) == None:
+        if xor(raw_conf[57]) == 0 or xor(raw_conf[57]) is None:
             conf['ProcessInjection'] = 'Disabled'
         elif xor(raw_conf[57]) == 1:
             conf['ProcessInjection'] = 'Default Browser'

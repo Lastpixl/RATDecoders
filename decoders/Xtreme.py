@@ -2,7 +2,7 @@ from struct import unpack
 import pefile
 
 
-def get_unicode_string(buf,pos):
+def get_unicode_string(buf, pos):
     out = ''
     for i in range(len(buf[pos:])):
         if not (ord(buf[pos+i]) >= 32 and ord(buf[pos+i]) <= 126) and not (ord(buf[pos+i+1]) >= 32 and ord(buf[pos+i+1]) <= 126):
@@ -12,7 +12,7 @@ def get_unicode_string(buf,pos):
     if out == '':
         return None
     else:
-        return out.replace('\x00','')
+        return out.replace('\x00', '')
 
 
 def rc4crypt(data, key):
@@ -29,7 +29,7 @@ def rc4crypt(data, key):
         y = (y + box[x]) % 256
         box[x], box[y] = box[y], box[x]
         out.append(chr(ord(char) ^ box[(box[x] + box[y]) % 256]))
-    
+
     return ''.join(out)
 
 
@@ -37,9 +37,10 @@ def extract_config(rawData):
     try:
         pe = pefile.PE(data=rawData)
         try:
-          rt_string_idx = [
-          entry.id for entry in 
-          pe.DIRECTORY_ENTRY_RESOURCE.entries].index(pefile.RESOURCE_TYPE['RT_RCDATA'])
+            rt_string_idx = [
+                entry.id for entry in
+                pe.DIRECTORY_ENTRY_RESOURCE.entries
+            ].index(pefile.RESOURCE_TYPE['RT_RCDATA'])
         except ValueError, e:
             return None
         except AttributeError, e:
@@ -52,7 +53,7 @@ def extract_config(rawData):
                 data = pe.get_memory_mapped_image()[data_rva:data_rva+size]
                 return data
     except:
-        return None 
+        return None
 
 
 def v29(rawConfig):

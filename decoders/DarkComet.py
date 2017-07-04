@@ -1,6 +1,6 @@
 import string
 import pefile
-from binascii import *
+from binascii import unhexlify
 
 BASE_CONFIG = {
     'FWB': '',
@@ -19,6 +19,7 @@ BASE_CONFIG = {
     'PWD': ''
 }
 
+
 def rc4crypt(data, key):
     x = 0
     box = range(256)
@@ -33,15 +34,18 @@ def rc4crypt(data, key):
         y = (y + box[x]) % 256
         box[x], box[y] = box[y], box[x]
         out.append(chr(ord(char) ^ box[(box[x] + box[y]) % 256]))
-    
+
     return ''.join(out)
 
+
 def v3_data(data, key):
+    # XXX entry is undefined
+    # XXX this method is never called
     config = BASE_CONFIG
     dec = rc4crypt(unhexlify(data), key)
     config[str(entry.name)] = dec
-
     return config
+
 
 def v51_data(data, key):
     config = BASE_CONFIG
@@ -53,12 +57,12 @@ def v51_data(data, key):
         value = value.rstrip()[1:-1]
         clean_value = filter(lambda x: x in string.printable, value)
         config[key] = clean_value
-
     return config
+
 
 def version_check(raw_data):
     if '#KCMDDC2#' in raw_data:
-        return '#KCMDDC2#-890' 
+        return '#KCMDDC2#-890'
     elif '#KCMDDC4#' in raw_data:
         return '#KCMDDC4#-890'
     elif '#KCMDDC42#' in raw_data:
@@ -72,6 +76,7 @@ def version_check(raw_data):
     else:
         return None
 
+
 def offset_check(raw_data):
     j = raw_data.find("#KCMDDC")
     thisprog = raw_data[:j][::-1].find('This program'[::-1])
@@ -79,16 +84,17 @@ def offset_check(raw_data):
     start = j - thisprog - mz - 2
     return start
 
+
 def extract_config(raw_data, key):
     raw_config = BASE_CONFIG
 
     pe = pefile.PE(data=raw_data)
-    
+
     rt_string_idx = [
         entry.id for entry in pe.DIRECTORY_ENTRY_RESOURCE.entries
     ].index(pefile.RESOURCE_TYPE['RT_RCDATA'])
     rt_string_directory = pe.DIRECTORY_ENTRY_RESOURCE.entries[rt_string_idx]
-    
+
     entry_names = [str(x.name) for x in rt_string_directory.directory.entries]
     print('\n'.join(entry_names))
     print(str(sum([1 for x in raw_config.keys() if x in entry_names])))
@@ -115,6 +121,7 @@ def extract_config(raw_data, key):
 
     return config_clean(raw_config)
 
+
 def config_clean(raw_config):
     try:
         newConf = {}
@@ -137,12 +144,11 @@ def config_clean(raw_config):
     except:
         return raw_config
 
-        
+
 def config(data):
     versionKey = version_check(data)
     if versionKey:
-        conf_data =  extract_config(data, versionKey)
+        conf_data = extract_config(data, versionKey)
         return conf_data
     else:
         return None
-

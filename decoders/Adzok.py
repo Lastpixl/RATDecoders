@@ -42,7 +42,7 @@ def config(data):
     raw_config = {}
     with ZipFile(new_zip, 'r') as jar:
         for name in jar.namelist():
-            if name == "config.xml": # contains the encryption key
+            if name == "config.xml":  # contains the encryption key
                 raw_config = jar.read(name)
                 new_config = parse_config(raw_config)
                 return new_config

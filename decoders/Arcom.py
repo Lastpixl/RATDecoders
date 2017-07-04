@@ -1,11 +1,12 @@
 import base64
-import string
 from Crypto.Cipher import Blowfish
+
 
 def decrypt_blowfish(raw_data):
     key = 'CVu3388fnek3W(3ij3fkp0930di'
     cipher = Blowfish.new(key)
     return cipher.decrypt(raw_data)
+
 
 def config(data):
     conf_data = {}

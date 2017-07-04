@@ -5,6 +5,7 @@ from base64 import b64decode
 def stringPrintable(line):
     return filter(lambda x: x in string.printable, line)
 
+
 def first_split(data):
     splits = data.split('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x7e')
     if len(splits) == 2:
@@ -14,7 +15,7 @@ def first_split(data):
 def base64_deocde(b64_string):
     return b64decode(b64_string)
 
-    
+
 def conf_extract(coded_config):
     conf_list = []
     decoded_conf = base64_deocde(coded_config)
@@ -41,8 +42,9 @@ def process_config(raw_config):
     conf_dict['Unknown'] = raw_config[12]
     return conf_dict
 
+
 def config(data):
-        coded_config = first_split(data)
-        raw_config = conf_extract(coded_config)
-        final_config = process_config(raw_config)
-        return final_config
+    coded_config = first_split(data)
+    raw_config = conf_extract(coded_config)
+    final_config = process_config(raw_config)
+    return final_config

@@ -1,9 +1,8 @@
 import string
-import binascii
+import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 from cStringIO import StringIO
 from Crypto.Cipher import ARC4, DES
-import xml.etree.ElementTree as ET
 
 
 def sortConfig(old_config):
@@ -35,29 +34,33 @@ def sortConfig(old_config):
         new_config['Port1'] = old_config['puerto']
         return new_config
     return old_config
-        
+
+
 def decrypt_des(enckey, data):
-    cipher = DES.new(enckey, DES.MODE_ECB) # set the ciper
-    return cipher.decrypt(data) # decrpyt the data
-    
+    cipher = DES.new(enckey, DES.MODE_ECB)  # set the ciper
+    return cipher.decrypt(data)  # decrpyt the data
+
+
 def decrypt_rc4(enckey, data):
-    cipher = ARC4.new(enckey) # set the ciper
-    return cipher.decrypt(data) # decrpyt the data
+    cipher = ARC4.new(enckey)  # set the ciper
+    return cipher.decrypt(data)  # decrpyt the data
+
 
 def config(data):
     Key = "awenubisskqi"
     newZip = StringIO(data)
     raw_config = {}
-    with ZipFile(newZip, 'r') as zip:
-        for name in zip.namelist():
-            if name == "config.xml": # contains the encryption key
-                # We need two attempts here first try DES for V1 If not try RC4 for V2
+    with ZipFile(newZip, 'r') as zipfile:
+        for name in zipfile.namelist():
+            if name == "config.xml":  # contains the encryption key
+                # We need two attempts here first try DES for V1 If not try RC4
+                # for V2
                 try:
-                    config = zip.read(name)
-                    result = decrypt_des(Key[:-4], config)
+                    config_xml = zipfile.read(name)
+                    result = decrypt_des(Key[:-4], config_xml)
                 except:
-                    config = zip.read(name)
-                    result = decrypt_rc4(Key, config)                                
+                    config_xml = zipfile.read(name)
+                    result = decrypt_rc4(Key, config_xml)
                 xml = filter(lambda x: x in string.printable, result)
                 root = ET.fromstring(xml)
                 for child in root:

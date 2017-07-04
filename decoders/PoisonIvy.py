@@ -1,14 +1,17 @@
 import string
 from struct import unpack
 
+
 def calc_length(byte_str):
     try:
         return unpack('<H', byte_str)[0]
     except:
         return None
 
+
 def clean_string(line):
     return filter(lambda x: x in string.printable, line)
+
 
 def first_split(data):
     splits = data.split('Software\\Microsoft\\Active Setup\\Installed Components\\')
@@ -16,10 +19,12 @@ def first_split(data):
         return splits[1]
     else:
         return None
-        
+
+
 def bytetohex(byte_str):
     return ''.join(['%02X' % ord(x) for x in byte_str]).strip()
-    
+
+
 def walk_data(data):
     # Byte array to make things easier.
     stream = bytearray(data)
@@ -36,12 +41,13 @@ def walk_data(data):
             for i in range(offset+4, offset+4+length):
                 temp.append(chr(stream[i]))
             date_type = bytetohex(data[offset]+data[offset+1])
-            this.append((date_type,''.join(temp)))
+            this.append((date_type, ''.join(temp)))
             offset += length+4
             max_count += 1
         except:
             return this
     return this
+
 
 def walk_domain(raw_stream):
     domains = ''
@@ -57,7 +63,8 @@ def walk_domain(raw_stream):
         port = calc_length(raw_stream[offset+length+2:offset+length+4])
         offset += length+4
         domains += '{0}:{1}|'.format(domain, port)
-    return domains    
+    return domains
+
 
 def extract_config(config_raw):
     config = {}
@@ -106,14 +113,15 @@ def extract_config(config_raw):
 
     return config
 
+
 def domain_parse(config):
     domain_list = []
     raw_domains = config["Domains"]
     for domain in raw_domains.split('|'):
         domain_list.append(domain.split(':')[0])
     return domain_list
-    
-    
+
+
 def config(data):
     try:
         # Split to get start of Config.

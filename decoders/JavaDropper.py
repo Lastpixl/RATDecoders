@@ -6,26 +6,32 @@ from zipfile import ZipFile
 from cStringIO import StringIO
 from base64 import b64decode
 
-#Non Standard Imports
+# Non Standard Imports
 from Crypto.Cipher import ARC4, AES, XOR
 
-#Helper Functions Go Here
+# Helper Functions Go Here
+
 
 def string_print(line):
     return filter(lambda x: x in string.printable, line)
 
-#### Ciphers ####
+# Ciphers
+
+
 def decrypt_RC4(enckey, data):
     cipher = ARC4.new(enckey)
     return cipher.decrypt(data)
+
 
 def decrypt_AES(enckey, data):
     cipher = AES.new(enckey)
     return cipher.decrypt(data)
 
+
 def decrypt_XOR(enckey, data):
     cipher = XOR.new(enckey)
     return cipher.decrypt(data)
+
 
 def parse_ek(key, drop):
     enc_key = key[:16]
@@ -36,11 +42,13 @@ def parse_ek(key, drop):
         print b64decode(section).decode('hex')
     return decoded
 
+
 def parse_load(key, drop):
     raw_key = '{0}ALSKEOPQLFKJDUSIKSJAUIE'.format(key)
     enc_key = hashlib.sha256(raw_key).hexdigest()
     decoded = decrypt_RC4(enc_key, drop)
     return decoded
+
 
 def parse_stub(drop):
     keys = ['0kwi38djuie8oq89', '0B4wCrd5N2OxG93h']
@@ -54,14 +62,18 @@ def parse_stub(drop):
             print "Found Embedded EXE"
             return decoded
 
+
 def parse_xor(key, drop):
     key2 = 'FYj&w3bd"m/kSZjD'
     decoded = decrypt_XOR(key2, drop)
     decompressed = zlib.decompress(decoded, 16+zlib.MAX_WBITS)
     return decompressed
 
-# Jar Parser
+
 def run(raw_data):
+    """
+    Jar Parser
+    """
     decoded = False
     jar_data = StringIO(raw_data)
     jar = ZipFile(jar_data, 'r')
@@ -92,10 +104,7 @@ def run(raw_data):
         print key
         decoded = parse_xor(key, jar.read(drop_file))
 
-
     if decoded:
         return decoded
     else:
         print "Unable to decode"
-
-

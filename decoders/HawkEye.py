@@ -1,9 +1,10 @@
 from base64 import b64decode
 
-#Non Standard Imports
+# Non Standard Imports
 import pype32
 from Crypto.Cipher import AES
 from pbkdf2 import PBKDF2
+
 
 def config(raw_data):
     try:
@@ -15,28 +16,31 @@ def config(raw_data):
     except Exception as e:
         return False
 
-#Helper Functions Go Here
+# Helper Functions Go Here
+
 
 def string_clean(line):
-    return ''.join((char for char in line if 32< ord(char) < 127))
-    
-# Crypto Stuffs
-def decrypt_string(key, salt, coded):
-    #try:
-        # Derive key
-        generator = PBKDF2(key, salt)
-        aes_iv = generator.read(16)
-        aes_key = generator.read(32)
-        # Crypto
-        mode = AES.MODE_CBC
-        cipher = AES.new(aes_key, mode, IV=aes_iv)
-        value = cipher.decrypt(b64decode(coded)).replace('\x00', '')
-        return string_print(value)#.encode('hex')
-    #except:
-        #return False
+    return ''.join((char for char in line if 32 < ord(char) < 127))
 
-# Get a list of strings from a section
+# Crypto Stuff
+
+
+def decrypt_string(key, salt, coded):
+    # Derive key
+    generator = PBKDF2(key, salt)
+    aes_iv = generator.read(16)
+    aes_key = generator.read(32)
+    # Crypto
+    mode = AES.MODE_CBC
+    cipher = AES.new(aes_key, mode, IV=aes_iv)
+    value = cipher.decrypt(b64decode(coded)).replace('\x00', '')
+    return string_print(value)  # .encode('hex')
+
+
 def get_strings(pe, dir_type):
+    """
+    Get a list of strings from a section
+    """
     counter = 0
     string_list = []
     m = pe.ntHeaders.optionalHeader.dataDirectory[14].info
@@ -45,11 +49,13 @@ def get_strings(pe, dir_type):
             string_list.append(value)
         counter += 1
     return string_list
-        
-#Turn the strings in to a python config_dict
 
-# Duplicate strings dont seem to be duplicated so we need to catch them
+
 def config_1(key, salt, string_list):
+    """
+    Turn the strings in to a python config_dict
+    Duplicate strings dont seem to be duplicated so we need to catch them
+    """
     config_dict = {}
     for i in range(40):
         if len(string_list[1]) > 200:
@@ -61,10 +67,12 @@ def config_1(key, salt, string_list):
                 config_dict["Config String {0}".format(i)] = string_list[i]
     return config_dict
 
-# Returns only printable chars
+
 def string_print(line):
+    """
+    Returns only printable chars
+    """
     try:
         return ''.join((char for char in line if 32 < ord(char) < 127))
     except:
         return line
-

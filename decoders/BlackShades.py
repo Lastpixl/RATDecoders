@@ -2,6 +2,7 @@ import re
 
 PRNG_SEED = 0
 
+
 def is_valid_config(config):
     if config[:3] != "\x0c\x0c\x0c":
         return False
@@ -9,10 +10,12 @@ def is_valid_config(config):
         return False
     return True
 
+
 def get_next_rng_value():
     global PRNG_SEED
     PRNG_SEED = ((PRNG_SEED * 1140671485 + 12820163) & 0xffffff)
     return PRNG_SEED / 65536
+
 
 def decrypt_configuration(hex):
     global PRNG_SEED
@@ -32,12 +35,14 @@ def decrypt_configuration(hex):
         if is_valid_config(config):
             return config.split("\x0c\x0c\x0c")
 
+
 def config_extract(raw_data):
     config_pattern = re.findall('[0-9a-fA-F]{154,}', raw_data)
     for s in config_pattern:
         if (len(s) % 2) == 1:
             s = s[:-1]
         return s
+
 
 def config_parser(config):
     config_dict = {}
@@ -60,7 +65,8 @@ def config_parser(config):
     config_dict['Smart DNS'] = config[17]
     config_dict['Protect Process'] = config[18]
     return config_dict
-        
+
+
 def config(data):
     raw_config = config_extract(data)
     if raw_config:

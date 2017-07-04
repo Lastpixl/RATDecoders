@@ -1,6 +1,5 @@
-import os
-import sys
 import pefile
+
 
 def extract_config(raw_data):
     try:
@@ -8,7 +7,7 @@ def extract_config(raw_data):
 
         try:
             rt_string_idx = [
-                  entry.id for entry in 
+                entry.id for entry in
                 pe.DIRECTORY_ENTRY_RESOURCE.entries
             ].index(pefile.RESOURCE_TYPE['RT_RCDATA'])
         except:
@@ -21,26 +20,29 @@ def extract_config(raw_data):
                 data_rva = entry.directory.entries[0].data.struct.OffsetToData
                 size = entry.directory.entries[0].data.struct.Size
                 data = pe.get_memory_mapped_image()[data_rva:data_rva+size]
-                config = data.split('}')
-                return config
+                config_raw = data.split('}')
+                return config_raw
     except:
-        return None        
+        return None
+
 
 def decode(line):
     result = ''
-    for i in range(0,len(line)):
+    for i in range(0, len(line)):
         a = ord(line[i])
         result += chr(a-1)
     return result
 
-def domain_parse(config):
+
+def domain_parse(extracted_config):
     domain_list = []
-    raw_domains = config["Domains"]
-    
+    raw_domains = extracted_config["Domains"]
+
     for domain in raw_domains.split(';'):
         domain_list.append(domain.split(':')[0])
     return domain_list
-    
+
+
 def config(data):
     try:
         conf_dict = {}
