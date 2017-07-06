@@ -1,0 +1,6 @@
+pycrypto
+pefile
+pype32
+yara
+pbkdf2
+androguard
