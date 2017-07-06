@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import os
 import sys
 import importlib
@@ -10,7 +10,7 @@ import tempfile
 import logging
 from optparse import OptionParser
 
-from decoders import JavaDropper
+from ratdecoder_module.decoders import JavaDropper
 logging.basicConfig()
 log = logging.getLogger('ratdecoder')
 
@@ -18,8 +18,9 @@ __description__ = 'RAT Config Extractor'
 __author__ = 'Kevin Breen, https://techanarchy.net, https://malwareconfig.com'
 __version__ = '1.0'
 __date__ = '2016/04'
-rule_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                         'yaraRules', 'yaraRules.yar')
+
+module_dir = os.path.dirname(sys.modules['ratdecoder_module'].__file__)
+rule_file = os.path.join(module_dir, 'yaraRules', 'yaraRules.yar')
 
 
 def unpack(raw_data):
@@ -87,7 +88,7 @@ def run(raw_data):
 
     # Import decoder
     try:
-        module = importlib.import_module('decoders.{0}'.format(family))
+        module = importlib.import_module('ratdecoder_module.decoders.{0}'.format(family))
         log.info("Identified family: {0}. Importing decoder.".format(family))
     except ImportError:
         log.warning('Unable to import decoder {0}'.format(family))
